@@ -1,5 +1,6 @@
 package com.devproblems.grpc.client.service;
 
+
 import com.devProblems.Author;
 import com.devProblems.Book;
 import com.devProblems.BookAuthorServiceGrpc;
@@ -11,12 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
-/**
- * @author Dev Problems(A Sarang Kumar Tak)
- * @YoutubeChannel https://www.youtube.com/channel/UCVno4tMHEXietE3aUTodaZQ
- */
+
 @Service
 public class BookAuthorClientService {
 
@@ -52,8 +49,9 @@ public class BookAuthorClientService {
                 countDownLatch.countDown();
             }
         });
-        boolean await = countDownLatch.await(1, TimeUnit.MINUTES);
-        return await ? response : Collections.emptyList();
+        if (response.isEmpty()) return Collections.emptyList();
+        return response;
+
     }
 
     public Map<String, Map<Descriptors.FieldDescriptor, Object>> getExpensiveBook() throws InterruptedException {
@@ -77,8 +75,8 @@ public class BookAuthorClientService {
         });
         TempDB.getBooksFromTempDb().forEach(responseObserver::onNext);
         responseObserver.onCompleted();
-        boolean await = countDownLatch.await(1, TimeUnit.MINUTES);
-        return await ? response : Collections.emptyMap();
+        if (response.isEmpty()) return Collections.emptyMap();
+        return response;
     }
 
     public List<Map<Descriptors.FieldDescriptor, Object>> getBooksByGender(String gender) throws InterruptedException {
@@ -105,7 +103,8 @@ public class BookAuthorClientService {
                 .filter(author -> author.getGender().equalsIgnoreCase(gender))
                 .forEach(author -> responseObserver.onNext(Book.newBuilder().setAuthorId(author.getAuthorId()).build()));
         responseObserver.onCompleted();
-        boolean await = countDownLatch.await(1, TimeUnit.MINUTES);
-        return await ? response : Collections.emptyList();
+        if (response.isEmpty()) return Collections.emptyList();
+        return response;
+
     }
 }
